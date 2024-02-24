@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,11 +21,11 @@ namespace MineSweeperWPF
     /// </summary>
     public partial class MineButton : Button
     {
+
         private Enums.CellState state;
         private Enums.CellType type;
+        private Enums.CellContent content;
         private Image btnImg;
-        private Label btnLabel;
-        public  int DisplayValue { get; set; }
         public int posX { get; set; }
         public int posY { get; set; }
         public Enums.CellState State
@@ -36,6 +37,7 @@ namespace MineSweeperWPF
             set
             {
                 state = value;
+                ChangeImgByState();
                 if (CellStateChanged != null)
                 {
                     CellStateChanged(this, state);
@@ -46,13 +48,40 @@ namespace MineSweeperWPF
         public MineButton()
         {
             InitializeComponent();
+            btnImg = new Image();
             state = Enums.CellState.Covered;
-            btnLabel = new Label();
-            btnLabel.Foreground = Brushes.Red;
-            btnLabel.FontSize = 20;
-            btnLabel.Padding = new Thickness(0);
+            this.AddChild(btnImg);
+            ChangeImgByState();
         }
+        private void ChangeImgByState()
+        {
+           switch (state) 
+            {
+                case Enums.CellState.Covered: btnImg.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/covered.png")); break;
+                case Enums.CellState.Flagged: btnImg.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/flag.png")); break;
 
+                case Enums.CellState.Uncovered:
+                    {
+                        switch (content)
+                        {
+                            case Enums.CellContent.Num_0: btnImg.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/num_0.png")); break;
+                            case Enums.CellContent.Num_1: btnImg.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/num_1.png")); break;
+                            case Enums.CellContent.Num_2: btnImg.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/num_2.png")); break;
+                            case Enums.CellContent.Num_3: btnImg.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/num_3.png")); break;
+                            case Enums.CellContent.Num_4: btnImg.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/num_4.png")); break;
+                            case Enums.CellContent.Num_5: btnImg.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/num_5.png")); break;
+                            case Enums.CellContent.Num_6: btnImg.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/num_6.png")); break;
+                            case Enums.CellContent.Num_7: btnImg.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/num_7.png")); break;
+                            case Enums.CellContent.Num_8: btnImg.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/num_8.png")); break;
+                            case Enums.CellContent.Mine: btnImg.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/mine.png")); break;
+                        }
+                        break;
+                    }
+                default : return;
+            }
+            
+        }
+        
         protected override void OnMouseRightButtonUp(MouseButtonEventArgs e)
         {
             base.OnMouseRightButtonUp(e);
@@ -65,30 +94,33 @@ namespace MineSweeperWPF
                 State = Enums.CellState.Covered;
             }
             
-            //redraw the button
-            DrawButton();
         }
 
-        private void DrawButton()
+        private  void Button_Click(object sender, RoutedEventArgs e)
         {
-            if (State == Enums.CellState.Flagged)
+            var button = sender as MineButton;
+            if (button != null)
             {
-                btnLabel.Content = "?";
-                
+                button.Content = "Clicked";
             }
-            else if (State == Enums.CellState.Uncovered)
+        }
+
+        private void Button_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+           
+        }
+
+        private void Button_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            var btn = sender as MineButton;
+            if (e.RightButton == MouseButtonState.Pressed)
             {
-                if (type == Enums.CellType.Mine)
-                {
-                    btnLabel.Content = "!";
-                }
-                else
-                {
-                    btnLabel.Content = DisplayValue.ToString();
-                }
+
             }
-            this.Content = btnLabel;
-            this.Margin = new Thickness(0);
-         }
+            else if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                 v
+            }
+        }
     }
 }

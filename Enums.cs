@@ -38,5 +38,20 @@ namespace MineSweeperWPF
             Won,
             Lost
         }
+
+        public enum CellContent
+        {
+            Num_0, 
+            Num_1,
+            Num_2,
+            Num_3,
+            Num_4,
+            Num_5,
+            Num_6,
+            Num_7,
+            Num_8,
+            
+            Mine
+        }
     }
 }
