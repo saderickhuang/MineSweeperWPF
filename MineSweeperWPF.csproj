@@ -11,7 +11,9 @@
   <ItemGroup>
     <None Remove="Resources\covered.png" />
     <None Remove="Resources\flag.png" />
+    <None Remove="Resources\lost.png" />
     <None Remove="Resources\mine.png" />
+    <None Remove="Resources\normal.png" />
     <None Remove="Resources\num_0.png" />
     <None Remove="Resources\num_1.png" />
     <None Remove="Resources\num_2.png" />
@@ -21,6 +23,7 @@
     <None Remove="Resources\num_6.png" />
     <None Remove="Resources\num_7.png" />
     <None Remove="Resources\num_8.png" />
+    <None Remove="Resources\win.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -30,7 +33,13 @@
     <Resource Include="Resources\flag.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Resources\lost.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Resources\mine.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\normal.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\num_0.png">
@@ -58,6 +67,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\num_8.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\win.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>

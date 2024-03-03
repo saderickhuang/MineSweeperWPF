@@ -13,11 +13,11 @@ namespace MineSweeperWPF
     {
         public enum Level
         {
-            Easy = 10,
-            Medium = 15,
-            Hard = 20
+            Easy ,
+            Medium ,
+            Hard
         }
-
+        
         public enum CellType
         {
             Empty,

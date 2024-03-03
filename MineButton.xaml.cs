@@ -10,6 +10,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
@@ -22,9 +23,9 @@ namespace MineSweeperWPF
     public partial class MineButton : Button
     {
 
-        private Enums.CellState state;
-        private Enums.CellType type;
-        private Enums.CellContent content;
+        public Enums.CellState state;
+        public Enums.CellType type;
+        public Enums.CellContent content;
         private Image btnImg;
         public int posX { get; set; }
         public int posY { get; set; }
@@ -45,6 +46,8 @@ namespace MineSweeperWPF
             }
         }
         public event EventHandler<Enums.CellState> CellStateChanged;
+
+        public event EventHandler CellClicked;
         public MineButton()
         {
             InitializeComponent();
@@ -53,7 +56,7 @@ namespace MineSweeperWPF
             this.AddChild(btnImg);
             ChangeImgByState();
         }
-        private void ChangeImgByState()
+        public void ChangeImgByState()
         {
            switch (state) 
             {
@@ -73,7 +76,7 @@ namespace MineSweeperWPF
                             case Enums.CellContent.Num_6: btnImg.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/num_6.png")); break;
                             case Enums.CellContent.Num_7: btnImg.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/num_7.png")); break;
                             case Enums.CellContent.Num_8: btnImg.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/num_8.png")); break;
-                            case Enums.CellContent.Mine: btnImg.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/mine.png")); break;
+                            case Enums.CellContent.Mine:  btnImg.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/mine.png")); break;
                         }
                         break;
                     }
@@ -82,7 +85,7 @@ namespace MineSweeperWPF
             
         }
         
-        protected override void OnMouseRightButtonUp(MouseButtonEventArgs e)
+        protected override void OnMouseRightButtonDown(MouseButtonEventArgs e)
         {
             base.OnMouseRightButtonUp(e);
             if (State == Enums.CellState.Covered)
@@ -93,33 +96,38 @@ namespace MineSweeperWPF
             {
                 State = Enums.CellState.Covered;
             }
+            else if (State == Enums.CellState.Uncovered)
+            {
+                CellClicked.Invoke(this, new EventArgs());
+            }
             
         }
-
-        private  void Button_Click(object sender, RoutedEventArgs e)
+        protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
-            var button = sender as MineButton;
-            if (button != null)
+            base.OnMouseLeftButtonUp(e);
+            CellClicked.Invoke(this, new EventArgs());
+        }
+
+        private void Button_MouseEnter(object sender, MouseEventArgs e)
+        {
+            if(state == Enums.CellState.Covered)
             {
-                button.Content = "Clicked";
+                DropShadowEffect dropShadowEffect = new DropShadowEffect();
+                dropShadowEffect.Color = Colors.Black;
+                dropShadowEffect.Direction = 320;
+                dropShadowEffect.ShadowDepth = 5;
+                dropShadowEffect.BlurRadius = 30;
+                btnImg.Effect  = dropShadowEffect;
+                
             }
         }
 
-        private void Button_MouseUp(object sender, MouseButtonEventArgs e)
+        private void Button_MouseLeave(object sender, MouseEventArgs e)
         {
-           
-        }
-
-        private void Button_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            var btn = sender as MineButton;
-            if (e.RightButton == MouseButtonState.Pressed)
+            if (state == Enums.CellState.Covered)
             {
+                btnImg.Effect = null;
 
-            }
-            else if (e.LeftButton == MouseButtonState.Pressed)
-            {
-                 v
             }
         }
     }
