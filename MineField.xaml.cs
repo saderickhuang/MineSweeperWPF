@@ -16,6 +16,15 @@ using System.Windows.Shapes;
 
 namespace MineSweeperWPF
 {
+    public class TriggerBtnDownArgs : RoutedEventArgs
+    {
+         public TriggerBtnDownArgs(RoutedEvent routedEvent, object source) : base(routedEvent, source)
+        {
+            
+         }
+ 
+         public MineButton btn { get; set; }
+     }
     /// <summary>
     /// MineField.xaml 的交互逻辑
     /// </summary>
@@ -30,6 +39,18 @@ namespace MineSweeperWPF
         public Enums.GameStatus GameStatus { get => gameStatus; set => gameStatus = value; }
 
         public event Action<Enums.GameStatus> GameStatuChange;
+
+        public static readonly RoutedEvent RightBtnDownGlobalEvent = EventManager.RegisterRoutedEvent
+            ("RightBtnDownGlobal", RoutingStrategy.Bubble, typeof(EventHandler<TriggerBtnDownArgs>), typeof(MineField));
+        public event RoutedEventHandler RightBtnDownGlobalHandler
+        {
+            add { this.AddHandler(RightBtnDownGlobalEvent, value); }
+            remove
+            {
+                this.RemoveHandler(RightBtnDownGlobalEvent, value);
+            }
+        }
+
         public MineField()
         {
             InitializeComponent();
@@ -37,6 +58,7 @@ namespace MineSweeperWPF
 
             this.Height = cellSize *levelMineFileSize[(int)currentLevel];
             this.Width = cellSize * levelMineFileSize[(int)currentLevel] ;
+            this.AddHandler(MineButton.RightBtnDownEvent, new RoutedEventHandler(btnRightClick));
         }
         public void resetMineFiledArray(Enums.Level level)
         {
@@ -347,6 +369,68 @@ namespace MineSweeperWPF
                 case 8: return Enums.CellContent.Num_8;
                 default: return Enums.CellContent.Num_0;
             }
+        }
+
+        internal void btnRightClick(object sender, RoutedEventArgs e)
+        {
+            var mBtn = e.OriginalSource as MineButton;
+            List<MineButton> mineButtons = FindNeighborButtons(mBtn);
+            foreach (var item in mineButtons)
+            {
+                item.PlayButtonDownAnimation();
+            }
+            //if count of flagged cell equals to the number of the cell, uncover all the cells around it
+            if (mBtn.content > Enums.CellContent.Num_0 && mBtn.content <= Enums.CellContent.Num_8)
+            {
+                uncoverAroundCells(mBtn);
+            }
+
+        }
+
+
+
+        private List<MineButton> FindNeighborButtons(MineButton? mBtn)
+        {
+            List<MineButton> mineButtons = new List<MineButton>();
+            if (mBtn == null)
+            {
+                return mineButtons;
+            }
+            int posX = mBtn.posX;
+            int posY = mBtn.posY;
+            if (posX - 1 >= 0 && posY - 1 >= 0)
+            {
+                mineButtons.Add(mineFiledArray[posX - 1][posY - 1]);
+            }
+            if (posX - 1 >= 0)
+            {
+                mineButtons.Add(mineFiledArray[posX - 1][posY]);
+            }
+            if (posX - 1 >= 0 && posY + 1 < levelMineFileSize[(int)currentLevel])
+            {
+                mineButtons.Add(mineFiledArray[posX - 1][posY + 1]);
+            }
+            if (posY - 1 >= 0)
+            {
+                mineButtons.Add(mineFiledArray[posX][posY - 1]);
+            }
+            if (posY + 1 < levelMineFileSize[(int)currentLevel])
+            {
+                mineButtons.Add(mineFiledArray[posX][posY + 1]);
+            }
+            if (posX + 1 < levelMineFileSize[(int)currentLevel] && posY - 1 >= 0)
+            {
+                mineButtons.Add(mineFiledArray[posX + 1][posY - 1]);
+            }
+            if (posX + 1 < levelMineFileSize[(int)currentLevel])
+            {
+                mineButtons.Add(mineFiledArray[posX + 1][posY]);
+            }
+            if (posX + 1 < levelMineFileSize[(int)currentLevel] && posY + 1 < levelMineFileSize[(int)currentLevel])
+            {
+                mineButtons.Add(mineFiledArray[posX + 1][posY + 1]);
+            }
+            return mineButtons;
         }
     }
 }

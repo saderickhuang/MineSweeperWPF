@@ -46,13 +46,17 @@ namespace MineSweeperWPF
                 }
             }
         }
+        public static readonly RoutedEvent RightBtnDownEvent = EventManager.RegisterRoutedEvent
+            ("RightBtnDown", RoutingStrategy.Bubble, typeof(EventHandler<RoutedEventArgs>), typeof(MineButton));
+        public event RoutedEventHandler Time
+        {
+            add { this.AddHandler(RightBtnDownEvent, value); }
+            remove
+            {
+                this.RemoveHandler(RightBtnDownEvent, value);
+            }
+        }
 
-
-        public static readonly RoutedEvent NumCellRightMouseBtnDownEvent = EventManager.RegisterRoutedEvent(
-        name: "NumCellRightMouseBtnDownEvent",
-        routingStrategy: RoutingStrategy.Bubble,
-        handlerType: typeof(RoutedEventHandler),
-        ownerType: typeof(MineButton));
 
         public event EventHandler<Enums.CellState> CellStateChanged;
 
@@ -65,31 +69,19 @@ namespace MineSweeperWPF
             state = Enums.CellState.Covered;
             this.AddChild(btnImg);
             ChangeImgByState();
-            
-            
         }
-        private bool isTwoButtonNeighbor(MineButton btn1, MineButton btn2)
+
+        public void PlayButtonDownAnimation()
         {
-            if (btn1 == btn2)
-            {
-                return false;
-            }
-            if (Math.Abs(btn1.posX - btn2.posX) <= 1 && Math.Abs(btn1.posY - btn2.posY) <= 1)
-            {
-                return true;
-            }
-            return false;
+            if (this.state != Enums.CellState.Covered) return;
+            DoubleAnimation da = new DoubleAnimation();
+            da.From = 1;
+            da.To = 0.5;
+            da.Duration = new Duration(TimeSpan.FromSeconds(0.1));
+            da.AutoReverse = true;
+            this.BeginAnimation(Button.OpacityProperty, da);
         }
-        private void MineButton_NumCellRightMouseBtnDown(object? sender, EventArgs e)
-        {
-            var mineButton = (MineButton)sender;
-            if (isTwoButtonNeighbor(this, mineButton))
-            {
-                //Trigger a animation
-                DoubleAnimation doubleAnimation = new DoubleAnimation();
-                //
-            }
-        }
+       
 
         public void ChangeImgByState()
         {
@@ -122,16 +114,11 @@ namespace MineSweeperWPF
         
         protected override void OnMouseRightButtonDown(MouseButtonEventArgs e)
         {
-            if (State == Enums.CellState.Uncovered && content >= Enums.CellContent.Num_0 && content <= Enums.CellContent.Num_8)
-            {
-                RaiseEvent(new RoutedEventArgs(NumCellRightMouseBtnDownEvent));
-                
-            }
-
-
+            RoutedEventArgs args = new RoutedEventArgs(RightBtnDownEvent, this);
+            this.RaiseEvent(args);
 
         }
-        protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
+        protected override void OnMouseRightButtonUp(MouseButtonEventArgs e)
         {
             if (State == Enums.CellState.Covered)
             {
