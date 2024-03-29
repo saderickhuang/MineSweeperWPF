@@ -32,6 +32,12 @@ namespace MineSweeperWPF
             btnStatus.Content = btnStatusImg;
             mineField.resetMineFiledArray(Level.Easy);
             resizeWindow();
+            this.AddHandler(MineField.RightBtnDownGlobalEvent, new RoutedEventHandler(MineButton_NumCellRightMouseBtnDown), true);
+        }
+
+        private void MineButton_NumCellRightMouseBtnDown(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
         }
 
         private void resizeWindow()
@@ -66,7 +72,7 @@ namespace MineSweeperWPF
             mineField.resetMineFiledArray(Level.Easy); 
         }
 
-        private void cbxLevel_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        internal void cbxLevel_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (mineField == null) return;
             switch(cbxLevel.SelectedIndex)

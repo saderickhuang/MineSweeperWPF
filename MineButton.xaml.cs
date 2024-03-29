@@ -10,6 +10,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
@@ -45,9 +46,22 @@ namespace MineSweeperWPF
                 }
             }
         }
+        public static readonly RoutedEvent RightBtnDownEvent = EventManager.RegisterRoutedEvent
+            ("RightBtnDown", RoutingStrategy.Bubble, typeof(EventHandler<RoutedEventArgs>), typeof(MineButton));
+        public event RoutedEventHandler Time
+        {
+            add { this.AddHandler(RightBtnDownEvent, value); }
+            remove
+            {
+                this.RemoveHandler(RightBtnDownEvent, value);
+            }
+        }
+
+
         public event EventHandler<Enums.CellState> CellStateChanged;
 
         public event EventHandler CellClicked;
+
         public MineButton()
         {
             InitializeComponent();
@@ -56,6 +70,19 @@ namespace MineSweeperWPF
             this.AddChild(btnImg);
             ChangeImgByState();
         }
+
+        public void PlayButtonDownAnimation()
+        {
+            if (this.state != Enums.CellState.Covered) return;
+            DoubleAnimation da = new DoubleAnimation();
+            da.From = 1;
+            da.To = 0.5;
+            da.Duration = new Duration(TimeSpan.FromSeconds(0.1));
+            da.AutoReverse = true;
+            this.BeginAnimation(Button.OpacityProperty, da);
+        }
+       
+
         public void ChangeImgByState()
         {
            switch (state) 
@@ -87,7 +114,12 @@ namespace MineSweeperWPF
         
         protected override void OnMouseRightButtonDown(MouseButtonEventArgs e)
         {
-            base.OnMouseRightButtonUp(e);
+            RoutedEventArgs args = new RoutedEventArgs(RightBtnDownEvent, this);
+            this.RaiseEvent(args);
+
+        }
+        protected override void OnMouseRightButtonUp(MouseButtonEventArgs e)
+        {
             if (State == Enums.CellState.Covered)
             {
                 State = Enums.CellState.Flagged;
@@ -100,7 +132,6 @@ namespace MineSweeperWPF
             {
                 CellClicked.Invoke(this, new EventArgs());
             }
-            
         }
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
@@ -124,7 +155,7 @@ namespace MineSweeperWPF
 
         private void Button_MouseLeave(object sender, MouseEventArgs e)
         {
-            if (state == Enums.CellState.Covered)
+            //if (state == Enums.CellState.Covered)
             {
                 btnImg.Effect = null;
 
