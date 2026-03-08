@@ -37,7 +37,8 @@ namespace MineSweeperWPF
 
         private void MineButton_NumCellRightMouseBtnDown(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            // 右键点击数字格子时不做任何操作
+            // 数字格子的右键功能在 MineField.btnRightClick 中处理
         }
 
         private void resizeWindow()

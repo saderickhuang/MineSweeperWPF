@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.DirectoryServices;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -285,26 +284,40 @@ namespace MineSweeperWPF
         {
             Random random = new Random();
             int mineCount = 0;
-            while (mineCount < levelMineCount[(int)currentLevel])
+            int size = levelMineFileSize[(int)currentLevel];
+            int totalCells = size * size;
+            int safeZoneCells = 9; // 第一次点击的格子及其周围8个格子不放置雷
+            
+            // 创建可用位置的列表（排除安全区）
+            List<(int x, int y)> availablePositions = new List<(int x, int y)>();
+            for (int x = 0; x < size; x++)
             {
-                int x = random.Next(0, levelMineFileSize[(int)currentLevel]);
-                int y = random.Next(0, levelMineFileSize[(int)currentLevel]);
-                if (mineFiledArray[x][y].State == Enums.CellState.Covered 
-                    && (x != posX && y != posY)
-                    && (x != posX && y != posY-1)
-                    && (x != posX && y != posY + 1)
-                    && (x != posX - 1 && y != posY)
-                    && (x != posX - 1 && y != posY - 1)
-                    && (x != posX - 1 && y != posY + 1)
-                    && (x != posX + 1 && y != posY)
-                    && (x != posX + 1 && y != posY - 1)
-                    && (x != posX + 1 && y != posY + 1)
-                    )
+                for (int y = 0; y < size; y++)
                 {
-                    mineFiledArray[x][y].content = Enums.CellContent.Mine;
-                    mineCount++;
+                    bool isInSafeZone = (Math.Abs(x - posX) <= 1 && Math.Abs(y - posY) <= 1);
+                    if (!isInSafeZone)
+                    {
+                        availablePositions.Add((x, y));
+                    }
                 }
             }
+            
+            // 洗牌算法随机选择位置
+            for (int i = availablePositions.Count - 1; i > 0; i--)
+            {
+                int j = random.Next(i + 1);
+                (availablePositions[i], availablePositions[j]) = (availablePositions[j], availablePositions[i]);
+            }
+            
+            // 放置地雷
+            int targetMines = levelMineCount[(int)currentLevel];
+            for (int i = 0; i < Math.Min(targetMines, availablePositions.Count); i++)
+            {
+                var (x, y) = availablePositions[i];
+                mineFiledArray[x][y].content = Enums.CellContent.Mine;
+                mineCount++;
+            }
+            
             GenerateNumbers();
         }
         private void GenerateNumbers()

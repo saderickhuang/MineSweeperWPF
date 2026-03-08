@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -135,8 +134,8 @@ namespace MineSweeperWPF
         }
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
-            base.OnMouseLeftButtonUp(e);
-            CellClicked.Invoke(this, new EventArgs());
+            base.OnMouseLeftButtonDown(e);
+            CellClicked?.Invoke(this, new EventArgs());
         }
 
         private void Button_MouseEnter(object sender, MouseEventArgs e)
